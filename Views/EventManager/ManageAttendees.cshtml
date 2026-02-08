@@ -1,0 +1,58 @@
+﻿@model Assignment1.Models.Event
+
+@{
+    ViewData["Title"] = "Manage Attendees - " + Model.Title;
+}
+
+<h1>Manage Attendees - @Model.Title</h1>
+
+@if (ViewData["Success"] != null)
+{
+    <div class="alert alert-info">
+        @ViewData["Success"]
+    </div>
+}
+
+<div class="card p-3 mb-4">
+    <h4>Sign Up for @Model.Title</h4>
+
+    <form asp-controller="EventManager"
+          asp-action="ManageAttendees"
+          asp-route-id="@Model.Id"
+          method="post">
+
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input class="form-control" type="text" name="Name" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" name="Email" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Sign Up</button>
+
+        <a class="btn btn-secondary" asp-controller="EventManager" asp-action="Index">
+            Back to Events
+        </a>
+    </form>
+</div>
+
+<h4>Current Attendees (@Model.Attendees.Count)</h4>
+
+@if (Model.Attendees.Count == 0)
+{
+    <p>No attendees yet.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var a in Model.Attendees)
+        {
+            <li class="list-group-item">
+                <strong>@a.Name</strong> (@a.Email)
+            </li>
+        }
+    </ul>
+}
