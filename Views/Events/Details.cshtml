@@ -1,0 +1,55 @@
+﻿@model Assignment1.Models.Event
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<h1>@Model.Title</h1>
+@if (!string.IsNullOrEmpty(Model.BannerUrl))
+{
+    <img src="@Model.BannerUrl" style="max-width:300px;" class="mb-3" />
+}
+
+<div class="mb-3">
+    <strong>Description:</strong> @Model.Description
+</div>
+
+<div class="mb-3">
+    <strong>Date:</strong> @Model.Date
+</div>
+
+<div class="mb-3">
+    <strong>Location:</strong> @Model.Location
+</div>
+
+<hr />
+
+<h3>Attendees (@Model.Attendees.Count)</h3>
+
+@if (!Model.Attendees.Any())
+{
+    <p>No attendees yet.</p>
+}
+else
+{
+    <ul class="list-group mb-3">
+        @foreach (var a in Model.Attendees)
+        {
+            <li class="list-group-item">
+                <strong>@a.Name</strong> (@a.Email)
+            </li>
+        }
+    </ul>
+}
+
+<a class="btn btn-primary"
+   asp-controller="Attendees"
+   asp-action="Index"
+   asp-route-eventId="@Model.Id">
+    Manage Attendees
+</a>
+
+<a class="btn btn-secondary"
+   asp-action="Index">
+    Back to Events
+</a>

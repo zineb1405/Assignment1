@@ -1,53 +1,73 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Assignment1.Data;
 using Assignment1.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Assignment1.Controllers
 {
     public class EventManagerController : Controller
     {
-        // Hardcoded "database"
-        private static List<Event> _events = new List<Event>
+        private readonly ApplicationDbContext _context;
+
+        public EventManagerController(ApplicationDbContext context)
         {
-            new Event { Id = 1, Title = "Career Fair", Date = new DateTime(2026, 2, 1), Location = "Gym" },
-            new Event { Id = 2, Title = "Tech Talk", Date = new DateTime(2026, 2, 8), Location = "Auditorium" },
-            new Event { Id = 3, Title = "Hack Night", Date = new DateTime(2026, 2, 15), Location = "Library" }
-        };
+            _context = context;
+        }
 
         // GET: /EventManager
         public IActionResult Index()
         {
             ViewData["Message"] = "Select an event to manage attendees.";
-            return View(_events); // View(model)
+
+            var events = _context.Events.ToList();
+            return View(events);
         }
 
         // GET: /EventManager/ManageAttendees/1
         [HttpGet]
         public IActionResult ManageAttendees(int id)
         {
-            var ev = _events.FirstOrDefault(e => e.Id == id); // LINQ FirstOrDefault
-            if (ev == null) return NotFound();
+            var ev = _context.Events
+                .Include(e => e.Attendees)
+                .FirstOrDefault(e => e.Id == id);
 
-            ViewData["EventTitle"] = ev.Title; // ViewData
-            return View(ev); // View(model)
+            if (ev == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["EventTitle"] = ev.Title;
+            return View(ev);
         }
 
         // POST: /EventManager/ManageAttendees/1
         [HttpPost]
         public IActionResult ManageAttendees(int id, Attendee attendee)
         {
-            var ev = _events.FirstOrDefault(e => e.Id == id);
-            if (ev == null) return NotFound();
+            var ev = _context.Events
+                .Include(e => e.Attendees)
+                .FirstOrDefault(e => e.Id == id);
 
-            if (!string.IsNullOrWhiteSpace(attendee.Name) && !string.IsNullOrWhiteSpace(attendee.Email))
+            if (ev == null)
             {
-                ev.Attendees.Add(attendee);
+                return NotFound();
+            }
+
+            if (!string.IsNullOrWhiteSpace(attendee.Name) &&
+                !string.IsNullOrWhiteSpace(attendee.Email))
+            {
+                attendee.EventId = ev.Id;
+                _context.Attendees.Add(attendee);
+                _context.SaveChanges();
+
                 ViewData["Success"] = "Attendee registered!";
             }
 
-            ViewData["EventTitle"] = ev.Title;
+            ev = _context.Events
+                .Include(e => e.Attendees)
+                .FirstOrDefault(e => e.Id == id);
+
+            ViewData["EventTitle"] = ev?.Title;
             return View(ev);
         }
     }
