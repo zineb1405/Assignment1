@@ -1,5 +1,6 @@
 ﻿using Assignment1.Data;
 using Assignment1.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,7 +16,8 @@ namespace Assignment1.Controllers
             _context = context;
         }
 
-        // GET: /events/{eventId}/attendees
+        // ✅ Anyone can VIEW attendees
+        [AllowAnonymous]
         [HttpGet("")]
         public IActionResult Index(int eventId)
         {
@@ -24,9 +26,7 @@ namespace Assignment1.Controllers
                 .FirstOrDefault(e => e.Id == eventId);
 
             if (ev == null)
-            {
                 return NotFound();
-            }
 
             ViewData["EventId"] = eventId;
             ViewData["EventTitle"] = ev.Title;
@@ -34,39 +34,27 @@ namespace Assignment1.Controllers
             return View(ev.Attendees.ToList());
         }
 
-        // GET: /events/{eventId}/attendees/create
+        // 🔒 Only Organizer can CREATE
+        [Authorize(Roles = "Organizer")]
         [HttpGet("create")]
         public IActionResult Create(int eventId)
         {
             var ev = _context.Events.FirstOrDefault(e => e.Id == eventId);
-
-            if (ev == null)
-            {
-                return NotFound();
-            }
+            if (ev == null) return NotFound();
 
             ViewData["EventId"] = eventId;
             ViewData["EventTitle"] = ev.Title;
 
-            var attendee = new Attendee
-            {
-                EventId = eventId
-            };
-
-            return View(attendee);
+            return View(new Attendee { EventId = eventId });
         }
 
-        // POST: /events/{eventId}/attendees/create
+        [Authorize(Roles = "Organizer")]
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(int eventId, Attendee attendee)
         {
             var ev = _context.Events.FirstOrDefault(e => e.Id == eventId);
-
-            if (ev == null)
-            {
-                return NotFound();
-            }
+            if (ev == null) return NotFound();
 
             attendee.EventId = eventId;
 
@@ -74,7 +62,7 @@ namespace Assignment1.Controllers
             {
                 _context.Attendees.Add(attendee);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Index), new { eventId = eventId });
+                return RedirectToAction(nameof(Index), new { eventId });
             }
 
             ViewData["EventId"] = eventId;
@@ -82,7 +70,8 @@ namespace Assignment1.Controllers
             return View(attendee);
         }
 
-        // GET: /events/{eventId}/attendees/edit/{id}
+        // 🔒 Only Organizer can EDIT
+        [Authorize(Roles = "Organizer")]
         [HttpGet("edit/{id}")]
         public IActionResult Edit(int eventId, string id)
         {
@@ -90,9 +79,7 @@ namespace Assignment1.Controllers
                 .FirstOrDefault(a => a.Id == id && a.EventId == eventId);
 
             if (attendee == null)
-            {
                 return NotFound();
-            }
 
             var ev = _context.Events.FirstOrDefault(e => e.Id == eventId);
 
@@ -102,22 +89,16 @@ namespace Assignment1.Controllers
             return View(attendee);
         }
 
-        // POST: /events/{eventId}/attendees/edit/{id}
+        [Authorize(Roles = "Organizer")]
         [HttpPost("edit/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int eventId, string id, Attendee attendee)
         {
             if (id != attendee.Id)
-            {
                 return NotFound();
-            }
 
             var ev = _context.Events.FirstOrDefault(e => e.Id == eventId);
-
-            if (ev == null)
-            {
-                return NotFound();
-            }
+            if (ev == null) return NotFound();
 
             attendee.EventId = eventId;
 
@@ -125,7 +106,7 @@ namespace Assignment1.Controllers
             {
                 _context.Update(attendee);
                 _context.SaveChanges();
-                return RedirectToAction(nameof(Index), new { eventId = eventId });
+                return RedirectToAction(nameof(Index), new { eventId });
             }
 
             ViewData["EventId"] = eventId;
@@ -133,7 +114,8 @@ namespace Assignment1.Controllers
             return View(attendee);
         }
 
-        // GET: /events/{eventId}/attendees/delete/{id}
+        // 🔒 Only Organizer can DELETE
+        [Authorize(Roles = "Organizer")]
         [HttpGet("delete/{id}")]
         public IActionResult Delete(int eventId, string id)
         {
@@ -141,9 +123,7 @@ namespace Assignment1.Controllers
                 .FirstOrDefault(a => a.Id == id && a.EventId == eventId);
 
             if (attendee == null)
-            {
                 return NotFound();
-            }
 
             var ev = _context.Events.FirstOrDefault(e => e.Id == eventId);
 
@@ -153,7 +133,7 @@ namespace Assignment1.Controllers
             return View(attendee);
         }
 
-        // POST: /events/{eventId}/attendees/delete/{id}
+        [Authorize(Roles = "Organizer")]
         [HttpPost("delete/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int eventId, string id)
@@ -162,14 +142,12 @@ namespace Assignment1.Controllers
                 .FirstOrDefault(a => a.Id == id && a.EventId == eventId);
 
             if (attendee == null)
-            {
                 return NotFound();
-            }
 
             _context.Attendees.Remove(attendee);
             _context.SaveChanges();
 
-            return RedirectToAction(nameof(Index), new { eventId = eventId });
+            return RedirectToAction(nameof(Index), new { eventId });
         }
     }
 }

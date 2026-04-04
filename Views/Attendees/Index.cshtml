@@ -7,18 +7,20 @@
 <h1>Attendees for @ViewData["EventTitle"]</h1>
 
 <p>
-    <a class="btn btn-primary"
-       asp-controller="Attendees"
-       asp-action="Create"
-       asp-route-eventId="@ViewData["EventId"]">
-        Add Attendee
-    </a>
+    @if (User.IsInRole("Organizer"))
+    {
+        <a class="btn btn-primary"
+           asp-controller="Attendees"
+           asp-action="Create"
+           asp-route-eventId="@ViewData["EventId"]">
+            Add Attendee
+        </a>
+    }
 
     <a class="btn btn-secondary"
        asp-controller="Events"
-       asp-action="Details"
-       asp-route-id="@ViewData["EventId"]">
-        Back to Event
+       asp-action="Index">
+        Back to Events
     </a>
 </p>
 
@@ -27,7 +29,10 @@
         <tr>
             <th>Name</th>
             <th>Email</th>
-            <th></th>
+            @if (User.IsInRole("Organizer"))
+            {
+                <th></th>
+            }
         </tr>
     </thead>
     <tbody>
@@ -36,20 +41,24 @@
             <tr>
                 <td>@attendee.Name</td>
                 <td>@attendee.Email</td>
-                <td>
-                    <a asp-controller="Attendees"
-                       asp-action="Edit"
-                       asp-route-eventId="@ViewData["EventId"]"
-                       asp-route-id="@attendee.Id">
-                        Edit
-                    </a> |
-                    <a asp-controller="Attendees"
-                       asp-action="Delete"
-                       asp-route-eventId="@ViewData["EventId"]"
-                       asp-route-id="@attendee.Id">
-                        Delete
-                    </a>
-                </td>
+
+                @if (User.IsInRole("Organizer"))
+                {
+                    <td>
+                        <a asp-controller="Attendees"
+                           asp-action="Edit"
+                           asp-route-eventId="@ViewData["EventId"]"
+                           asp-route-id="@attendee.Id">
+                            Edit
+                        </a> |
+                        <a asp-controller="Attendees"
+                           asp-action="Delete"
+                           asp-route-eventId="@ViewData["EventId"]"
+                           asp-route-id="@attendee.Id">
+                            Delete
+                        </a>
+                    </td>
+                }
             </tr>
         }
     </tbody>

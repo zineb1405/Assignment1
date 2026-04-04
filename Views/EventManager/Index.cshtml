@@ -8,6 +8,15 @@
 
 <p>@ViewData["Message"]</p>
 
+@if (User.IsInRole("Organizer"))
+{
+    <p>
+        <a class="btn btn-primary" asp-controller="Events" asp-action="Create">
+            Create New Event
+        </a>
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -26,12 +35,38 @@
                 <td>@ev.Date.ToString("yyyy-MM-dd")</td>
                 <td>@ev.Location</td>
                 <td>
-                    <a class="btn btn-primary"
-                       asp-controller="EventManager"
-                       asp-action="ManageAttendees"
-                       asp-route-id="@ev.Id">
-                        Manage Attendees
-                    </a>
+                    @if (User.IsInRole("Organizer"))
+                    {
+                        <a class="btn btn-primary"
+                           asp-controller="EventManager"
+                           asp-action="ManageAttendees"
+                           asp-route-id="@ev.Id">
+                            Manage Attendees
+                        </a>
+
+                        <a class="btn btn-warning"
+                           asp-controller="Events"
+                           asp-action="Edit"
+                           asp-route-id="@ev.Id">
+                            Edit
+                        </a>
+
+                        <a class="btn btn-danger"
+                           asp-controller="Events"
+                           asp-action="Delete"
+                           asp-route-id="@ev.Id">
+                            Delete
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-secondary"
+                           asp-controller="EventManager"
+                           asp-action="ManageAttendees"
+                           asp-route-id="@ev.Id">
+                            View Attendees
+                        </a>
+                    }
                 </td>
             </tr>
         }

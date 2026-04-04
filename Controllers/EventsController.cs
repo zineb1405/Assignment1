@@ -1,5 +1,6 @@
 ﻿using Assignment1.Data;
 using Assignment1.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -19,8 +20,8 @@ namespace Assignment1.Controllers
             _blobService = blobService;
         }
 
-
         // GET: /Events
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var events = _context.Events.ToList();
@@ -28,6 +29,7 @@ namespace Assignment1.Controllers
         }
 
         // GET: /Events/Details/1
+        [AllowAnonymous]
         public IActionResult Details(int id)
         {
             var ev = _context.Events
@@ -43,15 +45,17 @@ namespace Assignment1.Controllers
         }
 
         // GET: /Events/Create
+        [Authorize(Roles = "Organizer")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: /Events/Create
+        [Authorize(Roles = "Organizer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Event ev, IFormFile bannerFile)
+        public async Task<IActionResult> Create(Event ev, IFormFile? bannerFile)
         {
             if (bannerFile != null && bannerFile.Length > 0)
             {
@@ -69,6 +73,7 @@ namespace Assignment1.Controllers
         }
 
         // GET: /Events/Edit/1
+        [Authorize(Roles = "Organizer")]
         public IActionResult Edit(int id)
         {
             var ev = _context.Events.Find(id);
@@ -80,6 +85,7 @@ namespace Assignment1.Controllers
         }
 
         // POST: /Events/Edit/1
+        [Authorize(Roles = "Organizer")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, Event ev)
@@ -98,6 +104,7 @@ namespace Assignment1.Controllers
         }
 
         // GET: /Events/Delete/1
+        [Authorize(Roles = "Organizer")]
         public IActionResult Delete(int id)
         {
             var ev = _context.Events.FirstOrDefault(e => e.Id == id);
@@ -109,6 +116,7 @@ namespace Assignment1.Controllers
         }
 
         // POST: /Events/Delete/1
+        [Authorize(Roles = "Organizer")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)

@@ -5,6 +5,7 @@
 }
 
 <h1>@Model.Title</h1>
+
 @if (!string.IsNullOrEmpty(Model.BannerUrl))
 {
     <img src="@Model.BannerUrl" style="max-width:300px;" class="mb-3" />
@@ -42,12 +43,27 @@ else
     </ul>
 }
 
-<a class="btn btn-primary"
-   asp-controller="Attendees"
-   asp-action="Index"
-   asp-route-eventId="@Model.Id">
-    Manage Attendees
-</a>
+@if (User.IsInRole("Organizer"))
+{
+    <a class="btn btn-primary"
+       asp-controller="EventManager"
+       asp-action="ManageAttendees"
+       asp-route-id="@Model.Id">
+        Manage Attendees
+    </a>
+
+    <a class="btn btn-warning"
+       asp-action="Edit"
+       asp-route-id="@Model.Id">
+        Edit
+    </a>
+
+    <a class="btn btn-danger"
+       asp-action="Delete"
+       asp-route-id="@Model.Id">
+        Delete
+    </a>
+}
 
 <a class="btn btn-secondary"
    asp-action="Index">

@@ -6,34 +6,44 @@
 
 <h1>Create Event</h1>
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
+<form asp-controller="Events" asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
     <div class="mb-3">
-        <label class="form-label">Title</label>
+        <label asp-for="Title" class="form-label"></label>
         <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Description</label>
+        <label asp-for="Description" class="form-label"></label>
         <textarea asp-for="Description" class="form-control"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Date</label>
+        <label asp-for="Date" class="form-label"></label>
         <input asp-for="Date" class="form-control" type="datetime-local" />
+        <span asp-validation-for="Date" class="text-danger"></span>
     </div>
 
     <div class="mb-3">
-        <label class="form-label">Location</label>
+        <label asp-for="Location" class="form-label"></label>
         <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger"></span>
     </div>
+
     <div class="mb-3">
         <label class="form-label">Banner Image</label>
         <input type="file" name="bannerFile" class="form-control" />
     </div>
 
     <button type="submit" class="btn btn-success">Create</button>
-
-    <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-
+    <a asp-controller="Events" asp-action="Index" class="btn btn-secondary">Back to List</a>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

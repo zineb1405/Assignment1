@@ -19,7 +19,7 @@ namespace Assignment1.Models
         [Required]
         public string Location { get; set; } = "";
 
-        public string BannerUrl { get; set; } = "";
+        public string? BannerUrl { get; set; } = "";
 
         public List<Attendee> Attendees { get; set; } = new List<Attendee>();
     }

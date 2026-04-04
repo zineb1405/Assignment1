@@ -6,38 +6,51 @@
 
 <h1>Manage Attendees - @Model.Title</h1>
 
-@if (ViewData["Success"] != null)
+@if (TempData["Success"] != null)
 {
     <div class="alert alert-info">
-        @ViewData["Success"]
+        @TempData["Success"]
     </div>
 }
 
-<div class="card p-3 mb-4">
-    <h4>Sign Up for @Model.Title</h4>
+@if (User.IsInRole("Organizer"))
+{
+    <div class="card p-3 mb-4">
+        <h4>Add Attendee for @Model.Title</h4>
 
-    <form asp-controller="EventManager"
-          asp-action="ManageAttendees"
-          asp-route-id="@Model.Id"
-          method="post">
+        <form asp-controller="EventManager"
+              asp-action="ManageAttendees"
+              asp-route-id="@Model.Id"
+              method="post">
 
-        <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input class="form-control" type="text" name="Name" />
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <input class="form-control" type="text" name="Name" />
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input class="form-control" type="email" name="Email" />
-        </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input class="form-control" type="email" name="Email" />
+            </div>
 
-        <button type="submit" class="btn btn-success">Sign Up</button>
+            <button type="submit" class="btn btn-success">Add Attendee</button>
 
-        <a class="btn btn-secondary" asp-controller="EventManager" asp-action="Index">
-            Back to Events
-        </a>
-    </form>
-</div>
+            <a class="btn btn-secondary" asp-controller="EventManager" asp-action="Index">
+                Back to Events
+            </a>
+        </form>
+    </div>
+}
+else
+{
+    <div class="alert alert-secondary">
+        Only Organizers can manage attendees.
+    </div>
+
+    <a class="btn btn-secondary mb-4" asp-controller="EventManager" asp-action="Index">
+        Back to Events
+    </a>
+}
 
 <h4>Current Attendees (@Model.Attendees.Count)</h4>
 
@@ -50,8 +63,22 @@ else
     <ul class="list-group">
         @foreach (var a in Model.Attendees)
         {
-            <li class="list-group-item">
-                <strong>@a.Name</strong> (@a.Email)
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                    <strong>@a.Name</strong> (@a.Email)
+                </span>
+
+                @if (User.IsInRole("Organizer"))
+                {
+                    <form asp-controller="EventManager"
+                          asp-action="RemoveAttendee"
+                          asp-route-id="@Model.Id"
+                          asp-route-attendeeId="@a.Id"
+                          method="post"
+                          class="m-0">
+                        <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                    </form>
+                }
             </li>
         }
     </ul>
