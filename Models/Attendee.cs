@@ -15,6 +15,8 @@ namespace Assignment1.Models
         [EmailAddress]
         public string Email { get; set; } = "";
 
+        public string? UserId { get; set; }
+
         public int EventId { get; set; }
 
         public Event? Event { get; set; }

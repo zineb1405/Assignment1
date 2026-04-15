@@ -1,7 +1,8 @@
 using Assignment1.Data;
+using Assignment1.Hubs;
 using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Assignment1
 {
@@ -11,9 +12,9 @@ namespace Assignment1
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
+            builder.Services.AddSignalR();
             builder.Services.AddSingleton<BlobService>();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -31,7 +32,6 @@ namespace Assignment1
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-
                 var context = services.GetRequiredService<ApplicationDbContext>();
                 var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
                 var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
@@ -39,7 +39,6 @@ namespace Assignment1
                 await DbInitializer.Initialize(context, userManager, roleManager);
             }
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
@@ -59,6 +58,7 @@ namespace Assignment1
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.MapRazorPages();
+            app.MapHub<EventHub>("/eventHub");
 
             app.Run();
         }

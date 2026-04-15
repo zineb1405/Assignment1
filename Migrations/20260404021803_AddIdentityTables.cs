@@ -9,12 +9,18 @@ namespace Assignment1.Migrations
     public partial class AddIdentityTables : Migration
     {
         /// <inheritdoc />
+        //This method creates the database structure
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            //Creates roles table
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
+                    //Id → unique role ID
+                    //Name → “Organizer
+                    //NormalizedName → uppercase version
+                    //This table stores roles like Organizer or Admin
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -24,7 +30,7 @@ namespace Assignment1.Migrations
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
                 });
-
+            //This table stores user accounts, including username, email, and password hash
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
@@ -51,7 +57,7 @@ namespace Assignment1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetRoleClaims",
+                name: "AspNetRoleClaims",//Stores permissions per role
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -72,7 +78,7 @@ namespace Assignment1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserClaims",
+                name: "AspNetUserClaims",//Stores extra permissions per user.
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -93,7 +99,7 @@ namespace Assignment1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserLogins",
+                name: "AspNetUserLogins",//used for Google Login,..
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
@@ -113,7 +119,7 @@ namespace Assignment1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserRoles",
+                name: "AspNetUserRoles",//Links users to roles.
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -129,7 +135,7 @@ namespace Assignment1.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",//These foreign keys create relationships between users and roles
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -137,7 +143,7 @@ namespace Assignment1.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUserTokens",
+                name: "AspNetUserTokens",//used for : Password reset, security tokens
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -187,7 +193,7 @@ namespace Assignment1.Migrations
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
-
+            //Indexes are used to make queries faster, like finding users by username.
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
@@ -197,6 +203,7 @@ namespace Assignment1.Migrations
         }
 
         /// <inheritdoc />
+        //Deletes all tables.
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

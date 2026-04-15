@@ -21,6 +21,8 @@ namespace Assignment1.Models
 
         public string? BannerUrl { get; set; } = "";
 
+        public string? OrganizerUserId { get; set; }
+
         public List<Attendee> Attendees { get; set; } = new List<Attendee>();
     }
 }

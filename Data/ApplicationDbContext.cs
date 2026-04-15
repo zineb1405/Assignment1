@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Assignment1.Models;
+﻿using Assignment1.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
